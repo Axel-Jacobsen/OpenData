@@ -11,17 +11,17 @@ import time
 import urllib.request
 import json
 
-# Formatting csv file (if you already have a csv file, omit this code)
-"""
 with open('dayfile.csv', 'w') as today:
     today.write('Time (UTC), Northbound, Southbound\n')
-"""
 
 while True:
 
-    # Get the data for Norf side of lions gate bridge
-    u = urllib.request.urlopen('https://rtdsapi.translink.ca/rtdsapi/v1/LiveDataAtPoint?apikey=l9AKRy9Fuj2MNtBGOkZb&x=-123.130078&y=49.32477&z=10&types=3')
+    # Get the data for North side of lions gate bridge
+    url = 'https://rtdsapi.translink.ca/rtdsapi/v1/LiveDataAtPoint?apikey=' + settings.API_KEY + '&x=-123.130078&y=49.32477&z=10&types=3'
+
+    u = urllib.request.urlopen(url)
     lions_gate_data = u.read().decode('utf-8')
+
     with open('lions_gate_file.txt', 'w') as lions_gate_file:
         lions_gate_file.write(lions_gate_data)
 
@@ -32,7 +32,7 @@ while True:
         # for next steps
         file_data = lions_gate_file.read()
         file_parsed = json.loads(file_data)
-        data = file_parsed["data"]
+        data = file_parsed['data']
         fordatafile = str(file_parsed['timestampUtc']) + ',' + str(data[0]['speedKmph']) + ',' + str(data[1]['speedKmph']) + '\n'
 
         # Writes data every 2.5 minutes to file
@@ -40,8 +40,7 @@ while True:
             today.write(fordatafile)
 
         # Prints data to terminal
-        print(" North bound: ", data[0]['speedKmph'], 'km/h \n', "South bound: ", data[1]['speedKmph'], 'km/h \n')
+        print(' North bound: ', data[0]['speedKmph'], 'km/h \n', 'South bound: ', data[1]['speedKmph'], 'km/h \n')
 
     # Wait 2.5 minutes (refresh time of data file)
     time.sleep(60*2.5)
-
